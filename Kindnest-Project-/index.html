@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KindNest — No One Should Feel Forgotten</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF6EF;
+    --warm: #F2E8D9;
+    --gold: #C8965A;
+    --rust: #B85C38;
+    --sage: #7A9E7E;
+    --deep: #2C2416;
+    --muted: #8A7A68;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--deep);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 1.4rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 100;
+    background: linear-gradient(to bottom, var(--cream) 60%, transparent);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--rust);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--gold); font-style: italic; }
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  nav a:hover { color: var(--rust); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 3rem 4rem;
+    gap: 4rem;
+    position: relative;
+  }
+
+  .hero-bg-circle {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #E8D5B7 0%, transparent 70%);
+    right: -100px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .hero-text { position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 1.8rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 32px; height: 1px;
+    background: var(--sage);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--deep);
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .hero-body {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--rust);
+    color: #fff;
+    border: none;
+    padding: 0.9rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--deep); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--rust);
+    border: 1.5px solid var(--rust);
+    padding: 0.9rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { background: var(--rust); color: #fff; transform: translateY(-2px); }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nest-illustration {
+    width: 380px; height: 380px;
+    position: relative;
+  }
+
+  /* Big soft circle */
+  .nest-illustration .ring-outer {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(200, 150, 90, 0.25);
+    animation: slowSpin 30s linear infinite;
+  }
+  .nest-illustration .ring-mid {
+    position: absolute; inset: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 150, 90, 0.15);
+    animation: slowSpin 20s linear infinite reverse;
+  }
+
+  /* Center card */
+  .nest-card {
+    position: absolute; inset: 70px;
+    background: var(--warm);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(44, 36, 22, 0.12);
+  }
+  .nest-icon { font-size: 3rem; margin-bottom: 0.5rem; line-height: 1; }
+  .nest-stat {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--rust);
+  }
+  .nest-stat-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Floating badges */
+  .badge {
+    position: absolute;
+    background: #fff;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--deep);
+    box-shadow: 0 8px 24px rgba(44,36,22,0.1);
+    display: flex; align-items: center; gap: 0.4rem;
+    white-space: nowrap;
+  }
+  .badge-1 { top: 20px; left: -10px; animation: floatA 4s ease-in-out infinite; }
+  .badge-2 { bottom: 60px; left: -40px; animation: floatB 5s ease-in-out infinite; }
+  .badge-3 { top: 80px; right: -30px; animation: floatA 4.5s ease-in-out infinite 1s; }
+
+  @keyframes floatA {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes floatB {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+  @keyframes slowSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── DIVIDER ── */
+  .wave-divider {
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 3rem;
+    opacity: 0.4;
+  }
+
+  /* ── STORY SECTION ── */
+  .story {
+    padding: 7rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 5rem;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .story-sidebar {
+    position: sticky;
+    top: 7rem;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .section-label::before {
+    content: ''; display: block;
+    width: 20px; height: 1px; background: var(--sage);
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    color: var(--deep);
+  }
+  h2 em { font-style: italic; color: var(--rust); }
+
+  .story-quote {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-left: 3px solid var(--gold);
+    background: var(--warm);
+    border-radius: 0 8px 8px 0;
+  }
+  .story-quote p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .story-content p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #5A4E3E;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-content p strong {
+    color: var(--rust);
+    font-weight: 500;
+  }
+
+  /* ── PILLARS ── */
+  .pillars {
+    background: var(--deep);
+    padding: 7rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillars::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,150,90,0.08) 0%, transparent 70%);
+  }
+
+  .pillars-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 5rem;
+  }
+
+  .pillars-header h2 { color: var(--cream); }
+  .pillars-header .section-label { justify-content: center; }
+  .pillars-header .section-label::before { display: none; }
+  .pillars-header p {
+    color: rgba(250,246,239,0.5);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-top: 1rem;
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .pillar-card {
+    background: rgba(250,246,239,0.04);
+    border: 1px solid rgba(250,246,239,0.08);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    transition: background 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .pillar-card:hover {
+    background: rgba(250,246,239,0.07);
+    transform: translateY(-4px);
+  }
+
+  .pillar-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pillar-card:nth-child(1) .pillar-icon { background: rgba(184,92,56,0.2); }
+  .pillar-card:nth-child(2) .pillar-icon { background: rgba(122,158,126,0.2); }
+  .pillar-card:nth-child(3) .pillar-icon { background: rgba(200,150,90,0.2); }
+
+  .pillar-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+  }
+  .pillar-card p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgba(250,246,239,0.5);
+  }
+
+  /* ── VISION ── */
+  .vision {
+    padding: 7rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+
+  .vision-steps { display: flex; flex-direction: column; gap: 2rem; }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--gold);
+  }
+  .step-text h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--deep);
+    margin-bottom: 0.4rem;
+  }
+  .step-text p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  /* Vision card */
+  .vision-card {
+    background: var(--warm);
+    border-radius: 16px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .vision-card::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15rem;
+    color: rgba(200,150,90,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .vision-card blockquote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: var(--deep);
+    position: relative;
+  }
+  .vision-card cite {
+    display: block;
+    margin-top: 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── CTA ── */
+  .cta {
+    background: var(--rust);
+    padding: 6rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before, .cta::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .cta::before { width: 400px; height: 400px; top: -200px; left: -100px; }
+  .cta::after { width: 300px; height: 300px; bottom: -150px; right: 50px; }
+
+  .cta h2 {
+    color: #fff;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    margin-bottom: 1rem;
+  }
+  .cta p {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.05rem;
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+  .cta .btn-primary {
+    background: #fff;
+    color: var(--rust);
+  }
+  .cta .btn-primary:hover {
+    background: var(--cream);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--deep);
+    padding: 3rem;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+  .footer-logo span { color: var(--gold); font-style: italic; }
+  footer p {
+    color: rgba(250,246,239,0.35);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; text-align: center; }
+    .hero-visual { display: none; }
+    .hero-body { margin-left: auto; margin-right: auto; }
+    .btn-group { justify-content: center; }
+    .story { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .story-sidebar { position: static; }
+    .pillars { padding: 4rem 1.5rem; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .vision { padding: 4rem 1.5rem; }
+    .vision-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .wave-divider { margin: 0 1.5rem; }
+    nav { padding: 1.2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Kind<span>Nest</span></a>
+  <ul>
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#vision">Plan</a></li>
+    <li><a href="#get-involved">Get Involved</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-circle"></div>
+  <div class="hero-text fade-up">
+    <div class="hero-eyebrow">Compassion in Action</div>
+    <h1>No one should feel <em>forgotten.</em></h1>
+    <p class="hero-body">KindNest brings warmth, presence, and dignity to elderly residents and patients in nursing homes — because every person deserves to feel seen, loved, and remembered.</p>
+    <div class="btn-group">
+      <a href="#get-involved" class="btn-primary">Support KindNest</a>
+      <a href="#story" class="btn-secondary">Our Story</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="nest-illustration">
+      <div class="ring-outer"></div>
+      <div class="ring-mid"></div>
+      <div class="nest-card">
+        <div class="nest-icon">🪺</div>
+        <div class="nest-stat">Every</div>
+        <div class="nest-stat-label">person matters</div>
+      </div>
+      <div class="badge badge-1">🤝 Community visits</div>
+      <div class="badge badge-2">🎁 Care packages</div>
+      <div class="badge badge-3">💛 Real connection</div>
+    </div>
+  </div>
+</section>
+
+<div class="wave-divider"></div>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="story-sidebar fade-up">
+    <div class="section-label">The Heart Behind It</div>
+    <h2>A grandfather's <em>love</em> became our mission</h2>
+    <div class="story-quote">
+      <p>"He believed we didn't love him anymore. That broke me — and it changed everything."</p>
+    </div>
+  </div>
+
+  <div class="story-content fade-up">
+    <p>KindNest was born from a deeply personal experience. My grandfather — a man I love deeply — has schizophrenia, a condition that shapes the way he thinks, feels, and connects with the world around him.</p>
+
+    <p>During that time, <strong>he came to believe that our family had stopped loving him.</strong> That pain — real to him, heartbreaking to witness — stayed with me. It made me ask: how many other people in nursing homes and care facilities feel exactly this way, right now?</p>
+
+    <p>The answer was clear. Loneliness and isolation among the elderly is a quiet crisis. Many residents go days, weeks, or longer without a meaningful visit or a genuine moment of human warmth. Mental health challenges can intensify that sense of abandonment.</p>
+
+    <p>KindNest exists to change that — one visit, one care basket, one conversation at a time. <strong>We believe that presence is powerful.</strong> Showing up — sitting beside someone, looking them in the eye, asking how they're doing — is a profound act of kindness that costs nothing but means everything.</p>
+  </div>
+</section>
+
+<div class="wave-divider"></div>
+
+<!-- PILLARS -->
+<section class="pillars" id="mission">
+  <div class="pillars-header fade-up">
+    <div class="section-label">What We Do</div>
+    <h2>Three pillars of <em>kindness</em></h2>
+    <p>KindNest's work is built around three simple but powerful commitments to those who need it most.</p>
+  </div>
+
+  <div class="pillars-grid">
+    <div class="pillar-card fade-up">
+      <div class="pillar-icon">🏡</div>
+      <h3>Personal Visits</h3>
+      <p>We show up in person. Regular, consistent visits to nursing home residents — not just a wave from the door, but real time spent together. Listening. Talking. Being present.</p>
+    </div>
+    <div class="pillar-card fade-up">
+      <div class="pillar-icon">🎁</div>
+      <h3>Care Baskets</h3>
+      <p>Thoughtfully assembled packages filled with items residents actually need and appreciate. Small things that say: someone thought of you. Someone remembered you.</p>
+    </div>
+    <div class="pillar-card fade-up">
+      <div class="pillar-icon">🌱</div>
+      <h3>Community of Care</h3>
+      <p>Building a network of volunteers, donors, and nursing home partners who share the belief that no person — regardless of age or health — should feel alone and forgotten.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="vision" id="vision">
+  <div class="fade-up">
+    <div class="section-label">The Road Ahead</div>
+    <h2>How we're building <em>KindNest</em></h2>
+  </div>
+
+  <div class="vision-grid">
+    <div class="vision-steps fade-up">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-text">
+          <h4>Lay the Foundation</h4>
+          <p>Research how to formally establish KindNest as an organization — building a website, understanding legal requirements, and creating a framework for donations and support.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-text">
+          <h4>Connect with Nursing Homes</h4>
+          <p>Reach out to local care facilities — starting with the one where my grandfather stays — to establish visit schedules and understand resident needs firsthand.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-text">
+          <h4>Deliver Care Packages</h4>
+          <p>Begin assembling and bringing care baskets to residents. Each package is personal, practical, and filled with the message: you are not forgotten.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-text">
+          <h4>Grow the Community</h4>
+          <p>Expand our network of volunteers and donors, scaling the impact of KindNest across more nursing homes and reaching more people who need connection.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vision-card fade-up">
+      <blockquote>
+        "If I receive the support I need, I truly believe I can make a meaningful difference in our community. This investment in kindness, connection, and care will help our community grow stronger — more united and more compassionate."
+        <cite>— Alison Nunez Founder</cite>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="get-involved">
+  <h2>Be part of something <em>kind.</em></h2>
+  <p>Whether you donate, volunteer, or simply share KindNest's story — you're helping make sure that someone out there feels a little less alone today.</p>
+  <a href="mailto: "opamir2468@gmail.com" class="btn-primary">Get in Touch</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Kind<span>Nest</span></div>
+  <p>Bringing warmth, presence & dignity to those who need it most.</p>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
